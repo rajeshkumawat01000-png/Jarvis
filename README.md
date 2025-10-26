@@ -1,2 +1,1 @@
-# Jarvis
-Best ai app
+OPEN_AI_KEY
