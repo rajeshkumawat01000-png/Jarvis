@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis AI Assistant</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 flex flex-col min-h-screen">
+
+<header class="bg-gray-100 p-4 text-center shadow-md">
+  <h1 class="text-2xl font-bold text-blue-600">🤖 JARVIS AI Assistant</h1>
+  <p class="text-sm text-gray-700 mt-1">Speak or Type your question!</p>
+</header>
+
+<div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"></div>
+
+<div class="flex p-4 bg-gray-100 border-t border-gray-300">
+  <button onclick="startVoice()" class="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 mr-2">🎤</button>
+  <input id="user-input" type="text" placeholder="Ask something..." 
+         class="flex-1 p-3 rounded-l-xl bg-gray-50 border border-gray-300 focus:outline-none">
+  <button onclick="askJarvis()" class="bg-blue-600 px-4 py-3 rounded-r-xl hover:bg-blue-700 text-white">Send</button>
+</div>
+
+<script>
+const chatContainer = document.getElementById('chat-container');
+const userInput = document.getElementById('user-input');
+
+// Voice Recognition Setup
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+if(SpeechRecognition){
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-IN'; // Auto detect Hindi/English accent
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    userInput.value = transcript;
+    askJarvis();
+  };
+  recognition.onerror = (e) => addMessage('jarvis', '⚠️ Voice Error: '+e.error);
+} else {
+  addMessage('jarvis', '⚠️ Voice not supported on this browser.');
+}
+
+function startVoice(){
+  if(recognition) recognition.start();
+}
+
+function addMessage(sender, text){
+  const msg = document.createElement('div');
+  msg.className = `flex ${sender==='user'?'justify-end':'justify-start'}`;
+  msg.innerHTML = `
+    <div class="max-w-[75%] p-3 rounded-xl shadow-md mb-1 break-words ${sender==='user'?'bg-blue-600 text-white':'bg-gray-100 text-gray-900'}">
+      ${text}
+    </div>`;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Detect language automatically
+function detectLanguage(text){
+  const hindiRegex = /[\u0900-\u097F]/;
+  return hindiRegex.test(text) ? "hi" : "en";
+}
+
+// Send user message to backend
+async function askJarvis(){
+  const query = userInput.value.trim();
+  if(!query) return;
+  addMessage('user', query);
+  userInput.value = '';
+  addMessage('jarvis', 'Typing... ⏳');
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, lang: detectLanguage(query) })
+    });
+    const data = await res.json();
+    chatContainer.lastChild.remove();
+
+    const reply = data.choices?.[0]?.message?.content || data.error || "No response.";
+    addMessage('jarvis', reply);
+  } catch (err){
+    chatContainer.lastChild.remove();
+    addMessage('jarvis', '⚠️ Connection error.');
+  }
+}
+
+userInput.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    askJarvis();
+  }
+});
+</script>
+</body>
+</html>
