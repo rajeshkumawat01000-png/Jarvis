@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini AI App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+
+    <h1>Mini AI App</h1>
+
+    <!-- Settings Section -->
+    <div id="settings">
+      <label for="chatGptApiKey">ChatGPT API Key:</label>
+      <input type="password" id="chatGptApiKey" placeholder="Leave empty, add later">
+
+      <label for="googleApiKey">Google API Key:</label>
+      <input type="password" id="googleApiKey" placeholder="Leave empty, add later">
+
+      <label for="searchEngineId">Google Search Engine ID:</label>
+      <input type="text" id="searchEngineId" placeholder="Leave empty, add later">
+
+      <label for="languageSelect">Language:</label>
+      <select id="languageSelect">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <!-- Add more languages if needed -->
+      </select>
+
+      <button onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <!-- Input Section -->
+    <div id="inputSection">
+      <input type="text" id="userInput" placeholder="Type your question here...">
+      <button onclick="askAI()">Search</button>
+    </div>
+
+    <!-- Response Section -->
+    <div id="responseContainer"></div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
