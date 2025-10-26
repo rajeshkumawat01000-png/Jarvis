@@ -1,0 +1,64 @@
+let chatGptApiKey = ""; // ChatGPT API Key (empty)
+let googleApiKey = ""; // Google API Key (AIzaSyBgm4cInFci5u5QIMRGkt0UcqnR5b1wlKo)
+let searchEngineId = ""; // Google Search Engine ID (61d3293eddc67428c)
+let language = "en"; // Default language
+
+function saveSettings() {
+  chatGptApiKey = document.getElementById("chatGptApiKey").value.trim();
+  googleApiKey = document.getElementById("googleApiKey").value.trim();
+  searchEngineId = document.getElementById("searchEngineId").value.trim();
+  language = document.getElementById("languageSelect").value;
+
+  alert(`Settings saved!\nChatGPT API Key: ${chatGptApiKey ? "set" : "not set"}\nGoogle API Key: ${googleApiKey ? "set" : "not set"}\nSearch Engine ID: ${searchEngineId ? "set" : "not set"}\nLanguage: ${language}`);
+}
+
+async function askAI() {
+  const userInput = document.getElementById("userInput").value.trim();
+  const container = document.getElementById("responseContainer");
+
+  if (!userInput) return;
+
+  // Add user input card
+  const userCard = document.createElement("div");
+  userCard.className = "responseCard";
+  userCard.innerText = `You asked: "${userInput}"`;
+  container.appendChild(userCard);
+
+  // Add AI response card
+  const aiCard = document.createElement("div");
+  aiCard.className = "responseCard";
+  aiCard.innerText = "Fetching response...";
+  container.appendChild(aiCard);
+
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    let answer = "";
+
+    // ChatGPT API Call Placeholder
+    if (chatGptApiKey) {
+      // TODO: Replace with ChatGPT API call
+      answer += "ChatGPT API Key is set but API call is not configured yet.\n";
+    } else {
+      answer += "ChatGPT API Key not set.\n";
+    }
+
+    // Google Custom Search API Placeholder
+    if (googleApiKey && searchEngineId) {
+      // TODO: Replace with Google Search API call
+      answer += "Google API Key and Search Engine ID are set but search call not configured yet.";
+    } else {
+      answer += "Google API Key or Search Engine ID not set. Free fallback active.";
+    }
+
+    aiCard.innerText = answer;
+    container.scrollTop = container.scrollHeight;
+
+  } catch (err) {
+    aiCard.innerText = "Error fetching response.";
+    console.error(err);
+  }
+
+  // Clear input
+  document.getElementById("userInput").value = "";
+}
